@@ -1,0 +1,140 @@
+.bg {
+  height: 100vh;
+  background: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.todolist {
+  background: #fff;
+  border-radius: 5px;
+  width: 450px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 2px 5px 10px rgba(156, 156, 156, 0.1);
+  overflow: hidden;
+}
+
+.todolist-header {
+  background: #242f40;
+  width: 100%;
+  padding: 20px;
+}
+
+.todolist-header .title {
+  font-size: 25px;
+  font-weight: bold;
+  color: #f5be35;
+}
+
+.todolist-body {
+  width: 100%;
+  padding: 10px;
+}
+
+.todolist-body .todo-form {
+  display: flex;
+  justify-content: center;
+}
+
+.todolist-body .todo-form input {
+  width: 100%;
+}
+.todolist-body .todo-form button {
+  width: 20%;
+  margin: 5px;
+  margin-left: 0;
+  background: #242f40;
+  color: #fff;
+}
+
+.todos {
+  overflow: scroll;
+  height: 400px;
+}
+
+.todos input[type='checkbox'] {
+  margin: 0;
+  margin-left: 5px;
+  margin-right: 10px;
+}
+
+.todo {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  height: 35px;
+}
+
+#todo-input {
+  margin-left: 10px;
+  flex: 2;
+  display: none;
+  border: 1px solid #eee;
+  padding: 5px;
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#todo-label {
+  margin-left: 5px;
+  flex: 2;
+  padding: 5px;
+  padding-left: 8px;
+}
+
+.todo .todo-buttons .todo-edit-button,
+.todo .todo-buttons .todo-delete-button,
+.modify-buttons .todo-ok-button,
+.modify-buttons .todo-cancel-button {
+  padding: 5px 10px;
+  margin-left: 5px;
+}
+
+.modify-buttons {
+  display: none;
+}
+
+.todo-edit-button:hover,
+.todo-ok-button:hover {
+  background: #ebebeb;
+}
+
+.todo-delete-button,
+.todo-cancel-button {
+  background: #f5be35;
+  color: #242f40;
+}
+
+.todo-delete-button:hover,
+.todo-cancel-button:hover {
+  background: #f4b515;
+}
+
+.checked {
+  text-decoration-line: line-through;
+  color: #aaa;
+}
+
+/* 페이지네이션 버튼 */
+.pagination-bar {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pagination-btns {
+  background-color: transparent;
+  font-weight: bold;
+}
+
+.current {
+  color: #f4b515;
+}
