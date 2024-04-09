@@ -1,0 +1,69 @@
+WorkerLogService.java
+
+
+	public ResponseEntity<?> getInitData() {
+		try {
+			// worker log repository에서 시간순으로 멤버 20명의 로그 각각 약 10개씩 조회해 wList에 저장
+			List<WorkerLog> wList = workerLogRepo.findInitData();
+			// wList 비었으면 noContent return
+			if (wList.isEmpty())
+				return ResponseEntity.noContent().build();
+
+			// 로그 최신순으로 sorting
+			Comparator<WorkerLog> compareByRegidate = new Comparator<WorkerLog>() {
+				@Override
+				public int compare(WorkerLog o1, WorkerLog o2) {
+					return o1.getRegisterDate().compareTo(o2.getRegisterDate());
+				}
+			};
+			Collections.sort(wList, compareByRegidate);
+
+			// json type 지정
+			final HttpHeaders header = new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+
+			return ResponseEntity.ok().headers(header).body(wList);
+		} catch (Exception e) {
+			System.out.println("!!! WorkerLogService getInitData에서 Exception: " + e.getMessage());
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+
+	public ResponseEntity<?> getInitData1() {
+		try {
+			// worker repository에서 전체 worker list iterator에 저장
+			Iterator<Worker> it = workerRepo.findAll().iterator();
+			// key=userCode, value=log list 저장할 HashMap 선언
+			Map<Integer, Object> map = new HashMap<>();
+
+			// worker list iterator에 element 있으면 진행
+			while (it.hasNext()) {
+				int id = it.next().getId();
+				List<WorkerLog> wList = workerLogRepo.findInitData1(id);
+				if (wList.isEmpty())
+					return ResponseEntity.noContent().build();
+				// 로그 최신순으로 sorting
+				Comparator<WorkerLog> compareByRegidate = new Comparator<WorkerLog>() {
+					@Override
+					public int compare(WorkerLog o1, WorkerLog o2) {
+						return o1.getRegisterDate().compareTo(o2.getRegisterDate());
+					}
+				};
+				Collections.sort(wList, compareByRegidate);
+
+				String obj = om.writeValueAsString(wList);
+				map.put(id, obj);
+			}
+
+			// map element key 기준으로 정렬하려고 TreeMap 사용
+			Map<Integer, Object> sortedMap = new TreeMap<>(map);
+
+			final HttpHeaders header = new HttpHeaders();
+			header.setContentType(MediaType.APPLICATION_JSON);
+
+			return ResponseEntity.ok().headers(header).body(sortedMap);
+		} catch (Exception e) {
+			System.out.println("!!! WorkerLogService getInitData1에서 Exception: " + e.getMessage());
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}

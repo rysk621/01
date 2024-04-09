@@ -1,0 +1,129 @@
+
+
+
+
+	@PostConstruct
+	public void preWorkerEmul() {
+		List<Worker> list = workerRepo.findAll();
+		for (int i = 0; i < 20; i++) {
+			Worker w = list.get(i);
+			int id = w.getId();
+			double temp = 30.0;
+			int idx = rd.nextInt(0, 10);
+			boolean asc = rd.nextBoolean();
+			if (i < 10) {
+				WorkerDTO dto = WorkerDTO.builder().usercode(id).build();
+				for (int j = 0; j < 100; j++) {
+					int hr = rd.nextInt(82, 85);
+					if (id == 7 && j / 10 == 0)
+						hr = rd.nextInt(140, 160);
+					ReportDTO t = ReportDTO.builder().usercode(id).latitude(latArray[idx]).longitude(lonArray[idx])
+							.heartbeat(hr).temperature(temp).outTemp(28.0).build();
+					dto.getList().add(t);
+					if (asc == true) {
+						idx++;
+						if (idx >= 19) {
+							idx = 19;
+							asc = false;
+						}
+					} else {
+						idx--;
+						if (idx <= 0) {
+							idx = 0;
+							asc = true;
+						}
+					}
+				}
+				data.add(dto);
+			} else if (i < 15) {
+				WorkerDTO dto = WorkerDTO.builder().usercode(id).build();
+				for (int j = 0; j < 100; j++) {
+					int hr = rd.nextInt(82, 85);
+					ReportDTO t = ReportDTO.builder().usercode(id).latitude(latArr[idx]).longitude(lonArr[idx])
+							.heartbeat(hr).temperature(temp).outTemp(28.0).build();
+					dto.getList().add(t);
+					if (asc == true) {
+						idx++;
+						if (idx >= 19) {
+							idx = 19;
+							asc = false;
+						}
+					} else {
+						idx--;
+						if (idx <= 0) {
+							idx = 0;
+							asc = true;
+						}
+					}
+				}
+				data.add(dto);
+			} else {
+				WorkerDTO dto = WorkerDTO.builder().usercode(id).build();
+				for (int j = 0; j < 100; j++) {
+					int hr = rd.nextInt(82, 85);
+					double lat1 = rd.nextDouble(0, 0.4) - 0.2;
+					double lon1 = rd.nextDouble(0, 0.4) - 0.2;
+					ReportDTO t = ReportDTO.builder().usercode(id).latitude(latArr1[i - 15] + lat1)
+							.longitude(lonArr1[i - 15] + lon1).heartbeat(hr).temperature(temp).outTemp(28.0).build();
+					dto.getList().add(t);
+				}
+				data.add(dto);
+			}
+		}
+	}
+
+	public List<ReportDTO> get() {
+		List<ReportDTO> list = new ArrayList<>();
+		for (int i = 0; i < data.size(); i++) {
+			WorkerDTO d = data.get(idx);
+			ReportDTO r = d.getList().get(idx);
+			r.setRegidate(new Date());
+			list.add(r);
+		}
+		idx++;
+		if (idx >= 20) {
+			idx = 0;
+		}
+		System.out.println(
+				"emul get(), list size: " + list.size() + ", idx: " + idx + ", list: " + list.toString());
+		return list;
+	}
+}
+
+
+
+
+
+		Iterator<Worker> it = workerRepo.findAll().iterator();
+		while (it.hasNext()) {
+			int userCode = it.next().getId();
+			try {
+				System.out.println("> usercode " + userCode + " posted, data");
+				List<PreexLog> pList = preRepo.findData(userCode, num);
+				WorkerCur wC = workerCurRepo.findById(userCode).get();
+
+				// header 정보에 MediaType = JSON 설정 후 전달
+				final HttpHeaders header = new HttpHeaders();
+				header.setContentType(MediaType.APPLICATION_JSON);
+				final HttpEntity<?> entity = new HttpEntity<>(pList, header);
+
+				// exchange method 이용, method 설정(get/post/put/delete/etc) --> WorkerCur에 return
+				// 정보 저장
+				WorkerCur posted = restTemp.exchange(postLog + userCode, HttpMethod.POST, entity, WorkerCur.class)
+						.getBody();
+
+				// wC 객체에 posted 객체에서 받아온 status 저장
+				wC.setStatus(posted.getStatus());
+
+				// repository에 저장, 종료
+				workerCurRepo.saveAndFlush(wC);
+				System.out.println(
+						">>> usercode " + userCode + " state: " + posted.getStatus().toString() + ", DA success");
+				if (userCode == 96) {
+					num += 10;
+					it.equals(workerRepo.findAll().iterator());
+				}
+			} catch (Exception e) {
+				System.out.println("!!! " + userCode + " postData Exception : " + e.getMessage() + "\n");
+			}
+		}

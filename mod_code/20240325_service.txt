@@ -1,0 +1,137 @@
+DataService.java logic
+
+
+
+	// restTemp 이용해서 DA에 로그 보내기 --> status 전달받음
+	public void postData4() {
+		Iterator<Worker> it = workerRepo.findAll().iterator();
+		int num = 0;
+		while (num <= 100) {
+			while (it.hasNext()) {
+				int userCode = it.next().getId();
+				System.out.println("> usercode " + userCode + " posted");
+				List<PreexLog> pList = preRepo.findData(userCode, num);
+
+				if (pList.size() < 5) {
+					System.out.println("");
+					break;
+				}
+
+				try {
+					// header 정보에 MediaType = JSON 설정 후 전달
+					final HttpHeaders header = new HttpHeaders();
+					header.setContentType(MediaType.APPLICATION_JSON);
+					final HttpEntity<?> entity = new HttpEntity<>(pList, header);
+
+					// exchange method 이용, method 설정(get/post/put/delete/etc) --> return 정보
+					// WorkerCur type 저장
+					WorkerCur posted = restTemp.exchange(postLog + userCode, HttpMethod.POST, entity, WorkerCur.class)
+							.getBody();
+					// posted 객체랑 workerCur repository 비교, 동일 userCode 객체 wC에 저장
+					WorkerCur wC = workerCurRepo.findById(userCode).get();
+					// wC 객체에 posted 객체에서 받아온 status 저장
+					wC.setStatus(posted.getStatus());
+					// repository 저장, 종료
+					workerCurRepo.saveAndFlush(wC);
+					System.out.println(
+							">>> usercode " + userCode + " state: " + posted.getStatus().toString() + ", DA success");
+				} catch (Exception e) {
+					System.out.println("!!! " + userCode + " postData 메서드 Exception : " + e.getMessage() + "\n");
+				}
+			}
+			// log 10개씩 불러오는 쿼리에 전달할 idx 정수(offset)
+			num += 10;
+		}
+	}
+
+
+	// DA logic 안거치고 BE에서 데이터 처리 후 STATUS 변경
+	public void postData1() {
+		Iterator<Worker> it = workerRepo.findAll().iterator();
+		int num = 0;
+		while (num <= 10) {
+			while (it.hasNext()) {
+				int userCode = it.next().getId();
+				WorkerCur wC = workerCurRepo.findById(userCode).get();
+				double wCBeat = wC.getHeartbeat();
+				System.out.println("> usercode " + userCode + " posted, data1");
+				List<PreexLog> pList = preRepo.findData(userCode, num);
+
+				if (pList.size() < 5) {
+					System.out.println("list size is smaller than 5.");
+					break;
+				}
+
+				try {
+					double sum = 0;
+					for (PreexLog p : pList) {
+						sum += p.getHeartbeat();
+					}
+					double avg = sum / pList.size();
+					if (wCBeat < avg * 1.1 && wCBeat > avg * 0.9) {
+						wC.setStatus(WorkerStatus.SAFE);
+					}else {
+						wC.setStatus(WorkerStatus.CAUTION);
+					}
+//					else if (wCBeat < avg * 1.2 && wCBeat > avg * 0.8) {
+//						wC.setStatus(WorkerStatus.CAUTION);
+//					}
+//					else {
+//						wC.setStatus(WorkerStatus.WARNING);
+//					}
+
+					workerCurRepo.saveAndFlush(wC);
+
+					System.out.println(
+							">>> usercode " + userCode + " avg: "+avg + ", wCTemp: " +wCBeat + ", state: " + wC.getStatus().toString() + ", DA by BE success");
+				} catch (Exception e) {
+					System.out.println("!!! " + userCode + " postData1 메서드 Exception : " + e.getMessage() + "\n");
+				}
+			}
+		}
+		// log 10개씩 불러오는 쿼리에 전달할 idx 정수(offset)
+		num += 10;
+	}
+
+
+	// DA logic 안거치고 BE에서 데이터 처리 후 STATUS 변경 222
+	public void postData2(int userCode, int num) {
+		try {
+			System.out.println("> usercode " + userCode + " posted, data2");
+			List<PreexLog> pList = preRepo.findData(userCode, num);
+			WorkerCur wC = workerCurRepo.findById(userCode).get();
+			Double wCBeat = wC.getHeartbeat().doubleValue();
+			double sum = 0;
+			for (PreexLog p : pList) {
+				sum += p.getHeartbeat();
+			}
+			double avg = sum / pList.size();
+			double avgSafeUp = avg * 1.1;
+			double avgSafeLow = avg * 0.9;
+
+			// color signal 2단계 (safe, caution)
+			if (wCBeat.compareTo(avgSafeLow) > 0 && wCBeat.compareTo(avgSafeUp) < 0) {
+				wC.setStatus(WorkerStatus.SAFE);
+				wC.setStatus(WorkerStatus.CAUTION);
+			}
+
+			// color signal 3단계로 할 때 (safe, caution, warning)
+//			double avgSafeUp = avg * 1.1;
+//			double avgSafeLow = avg * 0.9;
+//			double avgCautionUp = avg * 1.2;
+//			double avgCautionLow = avg * 0.8;
+//			if (wCBeat.compareTo(avgSafeLow) > 0 && wCBeat.compareTo(avgSafeUp) < 0) {
+//				wC.setStatus(WorkerStatus.SAFE);
+//			} else if(wCBeat.compareTo(avgCautionLow) > 0 && wCBeat.compareTo(avgCautionUp) < 0) {
+//				wC.setStatus(WorkerStatus.CAUTION);
+//			} else {
+//				wC.setStatus(WorkerStatus.WARNING);
+//			}
+
+			workerCurRepo.saveAndFlush(wC);
+			System.out.println(">>> usercode " + userCode + " avg: " + avg + ", wCTemp: " + wCBeat + ", state: "
+					+ wC.getStatus().toString() + ", DA222 by BE success\n");
+		} catch (Exception e) {
+			System.out.println("!!! " + userCode + " postData2 메서드 Exception : " + e.getMessage() + "\n");
+		}
+	}

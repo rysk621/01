@@ -1,0 +1,24 @@
+
+//			List<WorkerLog> logList = workerLogRepo.findData(userCode);
+//			WorkerCur wC = workerCurRepo.findById(userCode).get();
+//
+//			try {
+//				double sum = 0;
+//				double max = 0;
+//				for (WorkerLog wlog : logList) {
+//					sum += wlog.getHeartbeat();
+//					if(wlog.getHeartbeat() > max) max = wlog.getHeartbeat();
+//				}
+//				Double wCBeat = max;
+//				double avg = sum / logList.size();
+//				double avgSafeUp = avg * 1.15;
+//				double avgSafeLow = avg * 0.85;
+//				double avgCautionUp = avg * 1.3;
+//				double avgCautionLow = avg * 0.7;
+//				if (wCBeat.compareTo(avgSafeLow) > 0 && wCBeat.compareTo(avgSafeUp) < 0) {
+//					wC.setStatus(WorkerStatus.SAFE);
+//				} else if (wCBeat.compareTo(avgCautionLow) > 0 && wCBeat.compareTo(avgCautionUp) < 0) {
+//					wC.setStatus(WorkerStatus.CAUTION);
+//				} else {
+//					wC.setStatus(WorkerStatus.WARNING);
+//				}

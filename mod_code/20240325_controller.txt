@@ -1,0 +1,33 @@
+
+	// restTemplate 이용하지 않고 BE 내에서 데이터 처리 및 저장 (10초 주기)
+	@Async
+//	@Scheduled(fixedDelay=10000)
+	public void dataPostProcessUserCode() {
+		if (workerRepo.existsById(userCode)) {
+			dataServ.postData2(userCode, num);
+		}
+		if (userCode == 96) {
+			num += 10;
+			userCode = 0;
+		}
+		userCode++;
+	}
+
+
+
+	// restTemplate 이용해 DA에 data post/get 하는 method (5초 주기)
+	@Async
+	@Scheduled(initialDelay=10000, fixedDelay=5000)
+	public void dataPostProcess() {
+//		if (!workerRepo.existsById(userCode)) {
+//			System.out.println(userCode + ": return");
+//			userCode++;
+//			return;
+//		}
+		dataServ.postData();
+//		if (userCode == 96) {
+//			num += 10;
+//			userCode = 0;
+//		}
+//		userCode++;
+	}

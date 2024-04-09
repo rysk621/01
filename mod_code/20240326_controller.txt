@@ -1,0 +1,14 @@
+WorkerLogController.java
+
+
+	// client 접속한 후 바로, 20명분 최근 로그 10개 get
+	@GetMapping("/workerlog")
+	public ResponseEntity<?> getInitData() {
+		return ResponseEntity.ok(logServ.getInitData()).getBody();
+	}
+
+	// client 접속 후 바로, 각 userCode 최근 로그 10개
+	@GetMapping("/workerlog1")
+	public ResponseEntity<?> getInitData1() {
+		return ResponseEntity.ok(logServ.getInitData1()).getBody();
+	}

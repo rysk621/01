@@ -1,0 +1,78 @@
+WorkerEmul.java (depracated)
+
+
+
+
+
+
+
+
+
+			double lat = rd.nextDouble(35.2344444444444, 35.234444444444445);
+			double lon = rd.nextDouble(129.0783333333332, 129.0783333333334);
+			double temp = 30.0;
+			int hr = rd.nextInt(82, 85);
+			
+			data.add(WorkerDTO.builder().usercode(1).latitude(lat).longitude(lon).heartbeat(hr).temperature(temp)
+					.outTemp(28.0).build());
+			data.add(WorkerDTO.builder().usercode(6).latitude(lat - 0.001).longitude(lon - 0.001).heartbeat(hr + 1)
+					.temperature(++temp).outTemp(29.0).build());
+			hr = rd.nextInt(80, 83);
+			data.add(WorkerDTO.builder().usercode(7).latitude(lat).longitude(lon).heartbeat(hr).temperature(temp - 1)
+					.outTemp(29.0).build());
+			data.add(WorkerDTO.builder().usercode(9).latitude(lat - 0.0015).longitude(lon - 0.0015).heartbeat(hr)
+					.temperature(--temp).outTemp(29.0).build());
+			data.add(WorkerDTO.builder().usercode(10).latitude(lat + 0.002).longitude(lon + 0.002).heartbeat(hr)
+					.temperature(temp).outTemp(30.0).build());
+			lat = rd.nextDouble(35.234444444444, 35.234444444444445);
+			lon = rd.nextDouble(129.0783333333332, 129.0783333333334);
+			hr = rd.nextInt(83, 86);
+			data.add(WorkerDTO.builder().usercode(11).latitude(lat).longitude(lon).heartbeat(hr).temperature(temp)
+					.outTemp(28.0).build());
+			data.add(WorkerDTO.builder().usercode(12).latitude(lat - 0.001).longitude(lon - 0.001).heartbeat(hr + 1)
+					.temperature(++temp).outTemp(29.0).build());
+			hr = rd.nextInt(80, 83);
+			data.add(WorkerDTO.builder().usercode(13).latitude(lat).longitude(lon).heartbeat(hr).temperature(temp - 1)
+					.outTemp(29.0).build());
+			data.add(WorkerDTO.builder().usercode(14).latitude(lat - 0.0015).longitude(lon - 0.0015).heartbeat(hr)
+					.temperature(--temp).outTemp(29.0).build());
+			data.add(WorkerDTO.builder().usercode(16).latitude(lat + 0.002).longitude(lon + 0.002).heartbeat(hr)
+					.temperature(temp).outTemp(30.0).build());
+			lat = rd.nextDouble(35.2344444444444445, 35.234444444444447);
+			lon = rd.nextDouble(129.0783333333333, 129.0783333333335);
+			hr = rd.nextInt(82, 85);
+			data.add(WorkerDTO.builder().usercode(20).latitude(lat).longitude(lon).heartbeat(hr).temperature(temp)
+					.outTemp(28.0).build());
+			data.add(WorkerDTO.builder().usercode(21).latitude(lat - 0.001).longitude(lon - 0.001).heartbeat(hr + 1)
+					.temperature(++temp).outTemp(29.0).build());
+			hr = rd.nextInt(80, 83);
+			data.add(WorkerDTO.builder().usercode(33).latitude(lat).longitude(lon).heartbeat(hr).temperature(temp - 1)
+					.outTemp(29.0).build());
+			data.add(WorkerDTO.builder().usercode(37).latitude(lat - 0.0015).longitude(lon - 0.0015).heartbeat(hr)
+					.temperature(--temp).outTemp(29.0).build());
+			data.add(WorkerDTO.builder().usercode(43).latitude(lat + 0.002).longitude(lon + 0.002).heartbeat(hr)
+					.temperature(temp).outTemp(30.0).build());
+			lat = rd.nextDouble(35.2344444444444448, 35.23444444444445);
+			lon = rd.nextDouble(129.07833333333337, 129.0783333333334);
+			hr = rd.nextInt(83, 86);
+			if(idx / 30 == 0 || idx / 5 == 0) hr = rd.nextInt(100,140);
+			data.add(WorkerDTO.builder().usercode(48).latitude(lat + 0.002).longitude(lon + 0.002).heartbeat(hr)
+					.temperature(temp).outTemp(30.0).build());
+			data.add(WorkerDTO.builder().usercode(49).latitude(lat).longitude(lon).heartbeat(hr).temperature(temp)
+					.outTemp(28.0).build());
+			lat = rd.nextDouble(35.2344444444444448, 35.23444444444445);
+			lon = rd.nextDouble(129.07833333333338, 129.078333333334);
+			hr = rd.nextInt(80, 83);
+			data.add(WorkerDTO.builder().usercode(59).latitude(lat - 0.001).longitude(lon - 0.001).heartbeat(hr + 1)
+					.temperature(++temp).outTemp(29.0).build());
+			data.add(WorkerDTO.builder().usercode(86).latitude(lat).longitude(lon).heartbeat(hr).temperature(temp - 1)
+					.outTemp(29.0).build());
+			data.add(WorkerDTO.builder().usercode(96).latitude(lat + 0.002).longitude(lon + 0.002).heartbeat(hr)
+					.temperature(temp).outTemp(30.0).build());
+			if (ind / 2 != 0) {
+				lat -= 0.0001;
+				lon -= 0.0001;
+			} else if (ind / 3 != 0) {
+				lat += 0.00015;
+				lon += 0.00015;
+			}

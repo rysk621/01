@@ -1,0 +1,97 @@
+datacontroller.java
+
+	// restTemplate 이용해 DA에 data post/get 하는 method (초기 5초 지연, 10초 주기)
+	@Async
+//	@Scheduled(initialDelay=5000, fixedRate = 10000)
+	public void dataPostProcess() {
+		// preEx log 전송
+//		dataServ.postData();
+		// emulated log 전송
+//		dataServ.postEmulData();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+dataservice.java
+
+
+
+	// restTemp --> DA에 로그(pre-existing log) 보냄 --> 분석된 status 반환 받음
+	public void postData() {
+		List<Worker> list = workerRepo.findAll();
+		for(Worker w : list) {
+			int userCode = w.getId();
+			try {
+				System.out.println("> usercode " + userCode + " posted, data");
+				List<PreexLog> pList = preRepo.findData(userCode, num);
+				WorkerCur wC = workerCurRepo.findById(userCode).get();
+
+				// header 정보에 MediaType = JSON 설정 후 전달
+				final HttpHeaders header = new HttpHeaders();
+				header.setContentType(MediaType.APPLICATION_JSON);
+				final HttpEntity<?> entity = new HttpEntity<>(pList, header);
+
+				// exchange method 이용, method 설정(get/post/put/delete/etc) --> WorkerCur에 return
+				// 정보 저장
+				WorkerCur posted = restTemp.exchange(postLog + userCode, HttpMethod.POST, entity, WorkerCur.class)
+						.getBody();
+
+				// wC 객체에 posted 객체에서 받아온 status 저장
+				wC.setStatus(posted.getStatus());
+
+				// repository에 저장, 종료
+				workerCurRepo.saveAndFlush(wC);
+				System.out.println(
+						">>> usercode " + userCode + " state: " + posted.getStatus().toString() + ", DA success");
+				if(userCode == 96) num += 10;
+			} catch (Exception e) {
+				System.out.println("!!! " + userCode + " postData Exception : " + e.getMessage() + "\n");
+			}
+		}
+	}
+
+	// restTemp --> DA에 로그(emulated log) 보냄 --> 분석된 status 반환 받음
+	public void postEmulData() {
+		List<Worker> list = workerRepo.findAll();
+		for(Worker w : list) {
+			int userCode = w.getId();
+			try {
+				System.out.println("> usercode " + userCode + " posted, data");
+				List<WorkerLog> pList = workerLogRepo.findByUserCode(userCode, num);
+				WorkerCur wC = workerCurRepo.findById(userCode).get();
+
+				// header 정보에 MediaType = JSON 설정 후 전달
+				final HttpHeaders header = new HttpHeaders();
+				header.setContentType(MediaType.APPLICATION_JSON);
+				final HttpEntity<?> entity = new HttpEntity<>(pList, header);
+
+				// exchange method 이용, method 설정(get/post/put/delete/etc) --> WorkerCur에 return
+				// 정보 저장
+				WorkerCur posted = restTemp.exchange(postLog + userCode, HttpMethod.POST, entity, WorkerCur.class)
+						.getBody();
+
+				// wC 객체에 posted 객체에서 받아온 status 저장
+				wC.setStatus(posted.getStatus());
+				wC.setRegisterDate(new Date());
+
+				// repository에 저장, 종료
+				workerCurRepo.saveAndFlush(wC);
+				System.out.println(
+						">>> usercode " + userCode + " state: " + posted.getStatus().toString() + ", DA success");
+				if(userCode == 96) num += 10;
+			} catch (Exception e) {
+				System.out.println("!!! " + userCode + " postData Exception : " + e.getMessage() + "\n");
+			}
+		}
+	}

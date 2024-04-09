@@ -1,0 +1,142 @@
+//		logCurRepo.save(WorkerLogCur.builder().usercode(w.getUsercode())
+//				.latitude(w.getLatitude()).longitude(w.getLongitude())
+//				.heartRate(w.getHeartRate()).temperature(w.getTemperature()).outTemp(w.getOutTemp())
+//				.status(w.getStatus())
+//				.build());
+
+CREATE DEFINER=`root`@`localhost` TRIGGER `status_current_AFTER_INSERT` AFTER INSERT ON `status_current` FOR EACH ROW BEGIN
+insert into status_log (status, worker_id) values (new.status, new.id);
+update worker set worker.status=new.status where worker.worker_id = new.id;
+END
+
+CREATE DEFINER=`root`@`localhost` TRIGGER `status_current_BEFORE_UPDATE` BEFORE UPDATE ON `status_current` FOR EACH ROW BEGIN
+insert into status_log (status, worker_id) values (old.status, old.id);
+update worker set worker.status=new.status where worker.worker_id = new.id;
+END
+
+// woker_log의 trigger
+CREATE DEFINER=`scott`@`%` TRIGGER `worker_log_AFTER_INSERT` AFTER INSERT ON `worker_log` FOR EACH ROW BEGIN
+insert into worker_cur (usercode, heartbeat, latitude, longitude, outsidetemperature, registerdate, temperature) values (new.usercode, new.heartbeat, new.latitude, new.longitude, new.outsidetemperature, new.registerdate, new.temperature) on duplicate key update
+ heartbeat = new.heartbeat,
+ latitude = new.latitude,
+ longitude = new.longitude,
+ outsidetemperature = new.outsidetemperature,
+ registerdate = new.registerdate,
+ temperature=new.temperature;
+END
+
+
+
+
+
+// WorkerLogService proto
+package com.project.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.project.domain.Worker;
+import com.project.persistence.WorkerLogRepository;
+import com.project.persistence.WorkerRepository;
+
+@Service
+public class WorkerLogService {
+	@Autowired
+	private WorkerRepository workerRepo;
+
+	@Autowired
+	private WorkerLogRepository logRepo;
+
+//	public ResponseEntity<?> findWorkerLog(long id){
+//		try {
+//			Worker worker = workerRepo.findById(id).get();
+//			System.out.println("findWorkerDB success");
+//			return ResponseEntity.ok(logRepo.findById(worker));
+//		} catch (Exception e) {
+//			System.out.println("Exception at WorkerService findWorkerDB: " + e.getMessage());
+//			return ResponseEntity.badRequest().body("Exception: " + e.getMessage());
+//		}
+//	}
+}
+
+
+
+
+//callable return (trial)
+	public Callable<?> find() {
+		try {
+			return () -> {
+				return null;
+			};
+		}catch(Exception e) {
+			return () -> {
+				return null;
+			};
+		}
+	}
+
+
+
+
+
+// dataService ResponseEntity<?> etc
+//    private final RestTemplate restTemplate;
+//
+//    public DataService(RestTemplate restTemplate) {
+//        this.restTemplate = restTemplate;
+//    }
+//
+//    public ResponseEntity<?> fetchData(int index) {
+//        String url = "http://10.125.121.170:5000/data/" + index;
+//        System.out.println("fetchData");
+//        return restTemplate.getForEntity(url, Object.class);
+//    }
+//
+//    public ResponseEntity<?> detectData(Worker worker){
+//    	try {
+//    		HttpHeaders headers = new HttpHeaders();
+//    		headers.setContentType(MediaType.APPLICATION_JSON);
+//    		String url = "http://10.125.121.170:5000/detect";
+//    		System.out.println("detectData");
+//    		return restTemplate.postForEntity(url, worker, Object.class);    		
+//    	} catch (Exception e) {
+//    		System.out.println("Exception at DataService detectData: " + e.getMessage());
+//    		return ResponseEntity.badRequest().body("Exception: " + e.getMessage());
+//    	}
+//    }
+
+
+
+
+//workerService ResponseEntity<?> etc
+//	public ResponseEntity<?> findWorkerByStatus(String statSt) {
+//		try {
+//			Status status = Status.valueOf(statSt);
+//			System.out.println("findWorkerByStatus success");
+//			return ResponseEntity.ok(workerRepo.findByStatus(status));
+//		} catch (Exception e) {
+//			System.out.println("Exception at WorkerService findWorkerByStatus: " + e.getMessage());
+//			return ResponseEntity.badRequest().body("Exception: " + e.getMessage());
+//		}
+//	}
+//
+//	public ResponseEntity<?> findWorkerByCaution() {
+//		try {
+//			System.out.println("findWorkerByCaution success");
+//			return ResponseEntity.ok(workerRepo.findByStatus(Status.CAUTION));
+//		} catch (Exception e) {
+//			System.out.println("Exception at WorkerService findWorkerByCaution: " + e.getMessage());
+//			return ResponseEntity.badRequest().body("Exception: " + e.getMessage());
+//		}
+//	}
+//
+//	public ResponseEntity<?> findWorkerBySafe() {
+//		try {
+//			System.out.println("findWorkerBySafe success");
+//			return ResponseEntity.ok(workerRepo.findByStatus(Status.SAFE));
+//		} catch (Exception e) {
+//			System.out.println("Exception at WorkerService findWorkerBySafe: " + e.getMessage());
+//			return ResponseEntity.badRequest().body("Exception: " + e.getMessage());
+//		}
+//	}

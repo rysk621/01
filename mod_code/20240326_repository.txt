@@ -1,0 +1,23 @@
+WorkerLogRepository.java
+
+
+
+
+	// userCode 1~10 사이, 오늘 로그 총 50개 불러오기
+	@Query(value="select * from worker_log as w"
+			+ " where w.usercode between 1 and 10"
+			+ " and date(w.registerdate)=curdate()"
+			+ " group by w.usercode, w.heartbeat, w.seq"
+			+ " order by w.RegisterDate desc limit 0, 50", nativeQuery=true)
+	List<WorkerLog> findLoguser1to10();
+
+/*
+ *  userCode 1~10 사이, 전날 로그 총 50개 불러오기 --> FE에 보냄.
+ *  (FE에서 admin login 후 get method 이용)
+ **/
+	@Query(value="select * from worker_log as w"
+			+ " where w.usercode between 1 and 100"
+//			+ " and date(w.registerdate)=curdate() - interval 1 day"
++ " group by w.usercode, w.heartbeat, w.seq"
++ " order by w.registerdate desc limit 220", nativeQuery=true)
+	List<WorkerLog> findInitData();
